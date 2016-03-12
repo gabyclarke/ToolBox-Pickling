@@ -2,9 +2,9 @@
 
 from os.path import exists
 import sys
-from pickle import dump, load
+import pickle
 
-def update_counter(file_name, reset=False):
+def updateCounter(fileName, reset=False):
 	""" Updates a counter stored in the file 'file_name'
 
 		A new counter will be created and initialized to 1 if none exists or if
@@ -13,27 +13,42 @@ def update_counter(file_name, reset=False):
 		If the counter already exists and reset is False, the counter's value will
 		be incremented.
 
-		file_name: the file that stores the counter to be incremented.  If the file
+		fileName: the file that stores the counter to be incremented.  If the file
 				   doesn't exist, a counter is created and initialized to 1.
-		reset: True if the counter in the file should be rest.
+		reset: True if the counter in the file should be reset.
 		returns: the new counter value
 
-	>>> update_counter('blah.txt',True)
+	>>> updateCounter('blah.txt',True)
 	1
-	>>> update_counter('blah.txt')
+	>>> updateCounter('blah.txt')
 	2
-	>>> update_counter('blah2.txt',True)
+	>>> updateCounter('blah2.txt',True)
 	1
-	>>> update_counter('blah.txt')
+	>>> updateCounter('blah.txt')
 	3
-	>>> update_counter('blah2.txt')
+	>>> updateCounter('blah2.txt')
 	2
 	"""
-	pass
+	if exists(fileName) and not reset:
+		f = open(fileName, 'r+')
+		content = int(pickle.load(f))
+		content += 1
+		f.seek(0,0)
+		pickle.dump(content, f)
+		f.close()
+		return content
+
+	else:
+		f = open(fileName, 'w')
+		pickle.dump('1', f)
+		f.seek(0,0)
+		f.close
+		return 1
+
 
 if __name__ == '__main__':
 	if len(sys.argv) < 2:
 		import doctest
 		doctest.testmod()
 	else:
-		print "new value is " + str(update_counter(sys.argv[1]))
+		print "new value is " + str(updateCounter(sys.argv[1]))
